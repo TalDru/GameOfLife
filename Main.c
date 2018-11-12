@@ -1,15 +1,16 @@
 ﻿#include <stdlib.h>
 #include <stdio.h>
 #include <Windows.h>
+#include <time.h>
 
 #define ALIVE 'O'
 #define DEAD '.'
 
-void DisplaySim(int rows, int columns, char* sim);
+void DisplaySim(int rows, int columns, char* sim, int gen);
 int CountN(int rows, int columns, int x, int y, char* sim);
 char* StepSim(int rows, int columns, char* prevSim);
 void BeginSim(int rows, int columns);
-double RandD(double min, double max);
+int Rand(int min, int max);
 char* CreateSim(int rows, int columns);
 
 
@@ -30,17 +31,15 @@ int main(int argc, char* argv[]) {
 	}
 	columns += 2;
 
-	//
-	SMALL_RECT windowSize = { 0 , 0 , columns*2-4 , rows-2 }; //change the values
+	SMALL_RECT windowSize = { 0 , 0 , columns*2-4 , rows-1 }; //change the values
 	SetConsoleWindowInfo(GetStdHandle(STD_OUTPUT_HANDLE), TRUE, &windowSize);
-	//
+
 	BeginSim(rows, columns);
 }
 
-void DisplaySim(int rows, int columns, char* sim) {
+void DisplaySim(int rows, int columns, char* sim, int gen) {
 
 	system("cls");
-	//printf("\n\n\n\n\n\n");
 
 	for (int y = 1; y < rows -1; y++)
 	{
@@ -50,6 +49,7 @@ void DisplaySim(int rows, int columns, char* sim) {
 		}
 		printf("\n");
 	}
+	printf("Generation: %d", gen);
 }
 
 int CountN(int rows, int columns, int x, int y, char* sim) {
@@ -103,25 +103,27 @@ char* StepSim(int rows, int columns, char* prevSim) {
 
 void BeginSim(int rows, int columns) {
 	puts("Beginning!");
+	int genNum = 1;
 	char* sim = CreateSim(rows, columns);
 	if (sim == NULL)
 		return;
-	DisplaySim(rows, columns, sim);
+	DisplaySim(rows, columns, sim, genNum);
 
 	while (1)
 	{
+		genNum++;
 		char* newSim = StepSim(rows, columns, sim);
 		if (newSim == NULL)
 			return;
 		free(sim);
 		sim = newSim;
-		DisplaySim(rows, columns, sim);
+		DisplaySim(rows, columns, sim, genNum);
 		Sleep(1000);
 	}
 }
 
-double RandD(double min, double max) {
-	return ((double)rand() / RAND_MAX)*(max - min) + min;
+int Rand(int min, int max) {
+	return rand()%max +min;
 }
 
 char* CreateSim(int rows, int columns) {
@@ -135,7 +137,7 @@ char* CreateSim(int rows, int columns) {
 	{
 		for (int x = 1; x < columns-1; x++)
 		{
-			if (RandD(0.0, 1.0) <= 0.35) {
+			if (Rand(0, 100) <= 35) {
 				*(sim + y*columns + x) = ALIVE; //Alive
 			}
 			else {
