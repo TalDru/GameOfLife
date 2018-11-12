@@ -30,6 +30,10 @@ int main(int argc, char* argv[]) {
 	}
 	columns += 2;
 
+	//
+	SMALL_RECT windowSize = { 0 , 0 , columns*2-4 , rows-2 }; //change the values
+	SetConsoleWindowInfo(GetStdHandle(STD_OUTPUT_HANDLE), TRUE, &windowSize);
+	//
 	BeginSim(rows, columns);
 }
 
